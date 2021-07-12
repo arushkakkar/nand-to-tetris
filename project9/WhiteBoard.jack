@@ -1,0 +1,125 @@
+class WhiteBoard {
+   field Array squares;
+   field Array circles;
+   field int numSquares;
+   field int numCircles;
+   field boolean currentShape;
+   field int currentX;
+   field int currentY;
+   field int direction;
+
+   constructor WhiteBoard new() {
+      let currentShape = true;
+      let squares = Array.new(50);
+      let squares[0] = Square.new(0, 0, 30);
+      let circles = Array.new(50);
+      let circles[0] = Circle.new(15, 15, 15);
+      let numSquares = 0;
+      let numCircles = 0;
+      return this;
+   }
+
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method void move() {
+      var Square currentSquare;
+      var Circle currentCircle;
+      if (currentShape) {
+         let currentSquare = squares[numSquares];
+         if (direction = 1) { do currentSquare.moveUp(); }
+         if (direction = 2) { do currentSquare.moveDown(); }
+         if (direction = 3) { do currentSquare.moveLeft(); }
+         if (direction = 4) { do currentSquare.moveRight(); }
+         do Sys.wait(10);
+      }
+      if (~(currentShape)) {
+         let currentCircle = circles[numCircles];
+         if (direction = 1) { do currentCircle.moveUp(); }
+         if (direction = 2) { do currentCircle.moveDown(); }
+         if (direction = 3) { do currentCircle.moveLeft(); }
+         if (direction = 4) { do currentCircle.moveRight(); }
+         do Sys.wait(10);
+      }
+      return;
+   }
+
+   method void changeShape(){
+      var Square currentSquare;
+      var Circle currentCircle;
+      if (currentShape) {
+         let currentSquare = squares[numSquares];
+         do currentSquare.erase();
+         let currentShape = false;
+         let circles[numCircles] = Circle.new(15, 15, 15);
+         return;
+      }
+      if (~currentShape) {
+         let currentCircle = circles[numCircles];
+         do currentCircle.erase();
+         let currentShape = true;
+         let squares[numSquares] = Square.new(0, 0, 30);
+         return;
+      }
+      return;
+   }
+
+   method void draw(){
+      var Square currentSquare;
+      var Circle currentCircle;
+      if (~currentShape){
+         let currentCircle = circles[numCircles];
+         do currentCircle.draw();
+         let numCircles = numCircles + 1;
+         let circles[numCircles] = Circle.new(15, 15, 15);
+      }
+      if (currentShape) {
+         let currentSquare = squares[numSquares];
+         do currentSquare.draw();
+         let numSquares = numSquares + 1;
+         let squares[numSquares] = Square.new(0, 0, 30);
+      }
+      return;
+   }
+
+   method void run() {
+      var char key;
+      var Square currentSquare;
+      var Circle currentCircle;
+      var boolean exit;
+      let exit = false;
+      while (~exit) {
+         let direction = 0;
+         while (key = 0) {
+            
+            let key = Keyboard.keyPressed();
+            if (currentShape){
+               let currentSquare = squares[numSquares];
+               do currentSquare.draw();
+            }
+            if (~(currentShape)){
+               let currentCircle = circles[numCircles];
+               do currentCircle.draw();
+            }
+         }
+         if (key = 140)  { let exit = true; }
+	 if (key = 128) { do draw(); }
+         if (key = 129)  { do changeShape(); }
+         if (key = 131) { let direction = 1; }
+         if (key = 133) { let direction = 2; }
+         if (key = 130) { let direction = 3; }
+         if (key = 132) { let direction = 4; }
+
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            do move();
+         }
+     }
+     return;
+   }
+}
+
+
+
